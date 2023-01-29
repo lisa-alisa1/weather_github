@@ -1,7 +1,8 @@
 <template>
     <div class="main-container">
         <div class="logo">
-            logo
+            <img src="../assets/logo.png" alt="">
+            <p> Weather forecast </p>
         </div>
         <div class="content-wrapper">
             <div class="buttons">
@@ -12,36 +13,51 @@
             <div class="main-block" v-if="isMain">
                 <div class="flex">
                     <div>
-                        <input  v-model="cityName" type="text">
-                        <button @click="getWeatherInfo()">get</button>
+                        <input class="city-input" type="text" v-model="cityName"   placeholder="Введите название города"/>
+                        <img class="plus" @click="getWeatherInfo()" src="../assets/plus.png">
                     </div>
                     <button>
-                        В избранное 
+                         В избранное 
                     </button>
-                   
+                     
                 </div>
-
+               
                 <div v-if="isWeatherGet" class="wrapper">
-                    <div class="weather-block" v-for="(card, index) in this.allCard" :key="index">
-                        <div class="content">
-                            <!-- {{ allCard }} -->
-                            <p class="city-name"> {{ card.name }}</p>
-                            <div class="inline">
-                                <p class="temp"> {{ Math.round(card.main.temp - 273) + '&deg;'}}</p>
-                                <img :src='`http://openweathermap.org/img/wn/${card.weather[0].icon}.png`'>
-                            </div>
-                            
-                            <p class="clouds"> {{ card.weather[0].main}}</p>
-                            <p class="clouds"> {{ new Date(card.dt).toLocaleTimeString()}}</p>
-                            
 
-                            <!-- <div class="sort">
-                                <div>день</div>
-                                <div> на 5 дней</div>
-                            </div> -->
+
+                     <div class="weather-block">
+                        <div class="content">
+                           
+                            <p class="city-name"> {{ currentCity.name}}</p>
+                            <div class="inline">
+                                <p class="temp"> {{ Math.round(currentCity.main.temp - 273) + '&deg;'}}</p>
+                                <img :src='`http://openweathermap.org/img/wn/${currentCity.weather[0].icon}.png`'>
+                            </div>
+                            <p class="clouds"> {{ currentCity.weather[0].main}}</p>
+                            <p class="clouds"> {{ new Date(currentCity.dt).toLocaleTimeString()}}</p>
+                        </div>
+                    </div>
+
+
+                    <div class="weather-block" v-for="(city, index) in this.allWeathers" :key="index">
+                        <div class="content">
+
+                            <p class="city-name"> {{ city.name }}</p>
+                            <div class="inline">
+                                <p class="temp"> {{ Math.round(city.main.temp - 273) + '&deg;'}}</p>
+                                <img :src='`http://openweathermap.org/img/wn/${city.weather[0].icon}.png`'>
+                            </div>
+                            <p class="clouds"> {{ city.weather[0].main}}</p>
+                            <p class="clouds"> {{ new Date(city.dt).toLocaleTimeString()}}</p>
                         </div>
                     </div>
                 </div>
+
+                <div class="wrapper">
+                    
+                </div>
+               
+                <!-- {{ currentCity }} -->
                 
             </div>
             <div class="favorites-block" v-if="isFavorites">
@@ -56,16 +72,26 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
+    mounted() {
+        this.getCurrentWeather().then(() => {
+            this.isWeatherGet = true
+        })
+    },
+    watch: {
+        cityName(value) {
+            console.log(value);
+        }
+    },
     data() {
         return {
-            cityName:  '',
             isWeatherGet: false,
             isMain: true,
-            isFavorites: false
+            isFavorites: false,
+            cityName: ''
         }
     },
     computed: {
-        ...mapGetters(['allCard']),
+        ...mapGetters(['allWeathers', 'currentCity']),
     },
     methods: {
         openMain() {
@@ -77,7 +103,7 @@ export default {
             this.isFavorites = true
         },
 
-        ...mapActions(["getWeather"]),
+        ...mapActions(["getWeather", 'getCurrentWeather']),
         getWeatherInfo() {
             this.getWeather(this.cityName).then(() => {
                 this.isWeatherGet = true
@@ -85,10 +111,24 @@ export default {
         }
     },
 }
+
 </script>
+
+
 <style>
+
 .logo {
     margin: 2%;
+    display: flex;
+    align-items: center;
+}
+.logo img {
+    height: 4rem;
+    margin-right: 1%;
+}
+.logo p {
+    font-size: 26px;
+    font-weight: 500;
 }
 .main-block {
     height: 20rem;
@@ -117,20 +157,39 @@ export default {
     border-radius:  5px 5px 0 0 ;
     background-color: rgba(255, 255, 255, 0.555);
 }
-
+.favorites-img {
+    height: 2rem;
+    margin-left: 1%;
+}
 .flex {
     display: flex;
     justify-content: space-between;
 }
 
+.flex button {
+    height: 2rem;
+    width: 9%;
+    text-align: center;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+}
+
+.flex > div {
+    align-items: center;
+    display: flex;
+    width: 18%;
+}
+
 .weather-block {
-    background-color: #9ec0db;
+    background-color: #287cbf2e;
     margin-top: 2%;
     height: 12rem;
     width: 23rem;
     border-radius: 10px;
     overflow: hidden;
     margin-left: 1%;
+    box-shadow: 8px 5px 5px #194d772e;
 }
 
 .content {
@@ -144,6 +203,7 @@ export default {
 
 .content p {
     margin: 1%;
+    font-size: 20px;
 }
  .sort {
     display: flex;
@@ -165,5 +225,20 @@ export default {
 .inline {
     display: flex;
     align-items: center;
+}
+
+.city-input {
+    border: none;
+    height: 2rem;
+    width: 80%;
+    border-radius: 5px;
+    margin-right: 4%;
+    padding-left: 7px;
+}
+
+.plus {
+    background: none;
+    border: none;
+    height: 22px;
 }
 </style>

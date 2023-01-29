@@ -1,7 +1,8 @@
 import {createStore} from 'vuex'
-import city from './modules/city'
+import weathers from './modules/weathers'
+
 export default createStore({
    modules: {
-    city
+      weathers,
    }
 })
