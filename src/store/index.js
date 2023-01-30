@@ -3,6 +3,6 @@ import weathers from './modules/weathers'
 
 export default createStore({
    modules: {
-      weathers,
+      weathers
    }
 })

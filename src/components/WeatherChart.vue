@@ -26,11 +26,8 @@
             `http://api.openweathermap.org/data/2.5/forecast?q=lviv&appid=5b8d267e2732b727535922ed20c4d9c4`
           ).then(response => {
             const data = response.data
-            console.log(data);
             this.hours = data.list.slice(0,13).map(item => item.dt_txt.slice(11, 16));
-            console.log(this.hours);
             this.temperatures = data.list.slice(0,13).map(item => item.main.temp- 273);
-            console.log(data.list);
             this.renderChart();
           })
       },

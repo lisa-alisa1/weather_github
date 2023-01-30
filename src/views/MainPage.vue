@@ -1,89 +1,80 @@
 <template>
-
     <div class="main-container">
         <div class="logo">
             <img src="../assets/logo.png" alt="">
             <p> Weather forecast </p>
         </div>
-      
+
         <div class="content-wrapper">
             <div class="buttons">
                 <button @click="openMain()"> Главная </button>
                 <button @click="openFavorites()" style="margin-left: 5px"> Избранное </button>
             </div>
-
             <div class="main-block" v-if="isMain">
                 <div class="flex">
                     <div>
                         <input class="city-input" type="text" v-model="cityName" placeholder="Введите название города"/>
                         <img class="plus" @click="getWeatherInfo()" src="../assets/plus.png">
                     </div>
-                    <button>
-                         В избранное 
-                    </button>
-                     
                 </div>
                   
                 <div v-if="isWeatherGet" class="wrapper">
-
-
                      <div class="weather-block">
                         <div class="content">
-                           
-                            <p class="city-name"> {{ currentCity.name}}</p>
+                            <p class="city-name"> {{ currentCity.name}} </p>
                             <div class="inline">
                                 <p class="temp"> 
                                     {{ Math.round(currentCity.main.temp - 273) + '&deg;'}}
                                 </p>
                                 <img :src='`http://openweathermap.org/img/wn/${currentCity.weather[0].icon}.png`'>
                             </div>
-                            <p class="clouds"> {{ currentCity.weather[0].main}}</p>
-                            <p class="clouds"> {{ new Date(currentCity.dt)}}</p>
+                            <p class="clouds"> 
+                                {{ currentCity.weather[0].main}} 
+                            </p>
+                            <p class="clouds"> 
+                                {{ new Date(currentCity.dt * 1000).toLocaleTimeString() }} | {{ new Date(currentCity.dt * 1000).toLocaleDateString() }}
+                            </p> 
                         </div>
                     </div>
 
-
                     <div class="weather-block" v-for="(city, index) in this.allWeathers" :key="index">
                         <div class="content">
-
+                            <img id="close"  src="../assets/close.png" alt="" @click="this.deleteCard(city.id)" >
                             <p class="city-name"> {{ city.name }}</p>
                             <div class="inline">
                                 <p class="temp"> {{ Math.round(city.main.temp - 273) + '&deg;'}}</p>
                                 <img :src='`http://openweathermap.org/img/wn/${city.weather[0].icon}.png`'>
                             </div>
                             <p class="clouds"> {{ city.weather[0].main}}</p>
-                            <p class="clouds"> {{ new Date(city.dt).toLocaleTimeString()}}</p>
+                            <p class="clouds"> 
+                                {{ new Date(city.dt * 1000).toLocaleTimeString() }} | {{ new Date(city.dt * 1000).toLocaleDateString() }}
+                            </p> 
+                          
                         </div>
                     </div>
-                    
                 </div>
-                <div>
+
+                <div class="chart-wrapper">
                     <WeatherChart />
                 </div>
             </div>
-            <div class="favorites-block" v-if="isFavorites">
-                hello
-            </div>
+            <div class="favorites-block" v-if="isFavorites"></div>
         </div>
     </div>
 </template>
-
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import  WeatherChart  from '@/components/WeatherChart.vue'
 
 export default {
-    components: {WeatherChart},
+    components: {
+        WeatherChart
+    },
     mounted() {
         this.getCurrentWeather().then(() => {
             this.isWeatherGet = true
         })
-    },
-    watch: {
-        cityName(value) {
-            console.log(value);
-        }
     },
     data() {
         return {
@@ -106,16 +97,18 @@ export default {
             this.isFavorites = true
         },
 
-        ...mapActions(["getWeather", 'getCurrentWeather']),
+        ...mapActions(["getWeather", 'getCurrentWeather', 'deteleCard']),
         getWeatherInfo() {
             this.getWeather(this.cityName).then(() => {
                 this.isWeatherGet = true
                 this.cityName = ''
             })
+        },
+        deleteCard(id) {
+            this.deteleCard(id)
         }
     },
 }
-
 </script>
 
 
@@ -188,7 +181,7 @@ export default {
 .weather-block {
     background-color: #287cbf2e;
     margin-top: 2%;
-    height: 12rem;
+    height: 13rem;
     width: 23rem;
     border-radius: 10px;
     overflow: hidden;
@@ -203,6 +196,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .content p {
@@ -221,7 +215,6 @@ export default {
     justify-content: center;
 }
 
-    
 .wrapper {
     display: flex;
 }
@@ -244,5 +237,12 @@ export default {
     background: none;
     border: none;
     height: 22px;
+}
+
+#close {
+    height: 1rem;
+    position: absolute;
+    left: 87%;
+    bottom: 82%;
 }
 </style>
