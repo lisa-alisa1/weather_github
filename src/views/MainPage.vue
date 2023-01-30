@@ -1,9 +1,11 @@
 <template>
+
     <div class="main-container">
         <div class="logo">
             <img src="../assets/logo.png" alt="">
             <p> Weather forecast </p>
         </div>
+      
         <div class="content-wrapper">
             <div class="buttons">
                 <button @click="openMain()"> Главная </button>
@@ -13,7 +15,7 @@
             <div class="main-block" v-if="isMain">
                 <div class="flex">
                     <div>
-                        <input class="city-input" type="text" v-model="cityName"   placeholder="Введите название города"/>
+                        <input class="city-input" type="text" v-model="cityName" placeholder="Введите название города"/>
                         <img class="plus" @click="getWeatherInfo()" src="../assets/plus.png">
                     </div>
                     <button>
@@ -21,7 +23,7 @@
                     </button>
                      
                 </div>
-               
+                  
                 <div v-if="isWeatherGet" class="wrapper">
 
 
@@ -30,11 +32,13 @@
                            
                             <p class="city-name"> {{ currentCity.name}}</p>
                             <div class="inline">
-                                <p class="temp"> {{ Math.round(currentCity.main.temp - 273) + '&deg;'}}</p>
+                                <p class="temp"> 
+                                    {{ Math.round(currentCity.main.temp - 273) + '&deg;'}}
+                                </p>
                                 <img :src='`http://openweathermap.org/img/wn/${currentCity.weather[0].icon}.png`'>
                             </div>
                             <p class="clouds"> {{ currentCity.weather[0].main}}</p>
-                            <p class="clouds"> {{ new Date(currentCity.dt).toLocaleTimeString()}}</p>
+                            <p class="clouds"> {{ new Date(currentCity.dt)}}</p>
                         </div>
                     </div>
 
@@ -51,14 +55,11 @@
                             <p class="clouds"> {{ new Date(city.dt).toLocaleTimeString()}}</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="wrapper">
                     
                 </div>
-               
-                <!-- {{ currentCity }} -->
-                
+                <div>
+                    <WeatherChart />
+                </div>
             </div>
             <div class="favorites-block" v-if="isFavorites">
                 hello
@@ -70,8 +71,10 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import  WeatherChart  from '@/components/WeatherChart.vue'
 
 export default {
+    components: {WeatherChart},
     mounted() {
         this.getCurrentWeather().then(() => {
             this.isWeatherGet = true
@@ -87,7 +90,7 @@ export default {
             isWeatherGet: false,
             isMain: true,
             isFavorites: false,
-            cityName: ''
+            cityName: '',
         }
     },
     computed: {
@@ -107,6 +110,7 @@ export default {
         getWeatherInfo() {
             this.getWeather(this.cityName).then(() => {
                 this.isWeatherGet = true
+                this.cityName = ''
             })
         }
     },
@@ -118,7 +122,7 @@ export default {
 <style>
 
 .logo {
-    margin: 2%;
+    margin: 2% 2% 1% 1%;
     display: flex;
     align-items: center;
 }
@@ -131,7 +135,7 @@ export default {
     font-weight: 500;
 }
 .main-block {
-    height: 20rem;
+    height: 47rem;
     background-color: rgba(255, 255, 255, 0.555);
     width: 75%;
     padding: 1%;
